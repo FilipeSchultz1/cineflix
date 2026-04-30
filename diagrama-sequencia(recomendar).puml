@@ -1,0 +1,36 @@
+@startuml
+
+actor Usuario
+
+participant RecomendadorFilmes
+participant CatalogoFilmesAPI
+participant FiltroFilmes
+participant CalculadoraScore
+participant HistoricoUsuarioRepository
+participant NotificadorPush
+participant GeradorAleatorio
+
+Usuario -> RecomendadorFilmes : recomendar(u, topN)
+
+RecomendadorFilmes -> CatalogoFilmesAPI : listarFilmes()
+CatalogoFilmesAPI --> RecomendadorFilmes : listaFilmes
+
+RecomendadorFilmes -> FiltroFilmes : filtrar(listaFilmes, perfil)
+FiltroFilmes --> RecomendadorFilmes : filmesFiltrados
+
+loop para cada filme
+  RecomendadorFilmes -> CalculadoraScore : calcularScore(filme, perfil)
+  CalculadoraScore --> RecomendadorFilmes : score
+end
+
+RecomendadorFilmes -> RecomendadorFilmes : ordenar(score desc, popularidade desc, aleatório)
+
+RecomendadorFilmes -> HistoricoUsuarioRepository : registrarRecomendacao(usuario, lista)
+
+alt notificações ativas
+  RecomendadorFilmes -> NotificadorPush : enviar(usuario, lista)
+end
+
+RecomendadorFilmes --> Usuario : listaRecomendada
+
+@enduml
