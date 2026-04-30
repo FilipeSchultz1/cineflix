@@ -1,0 +1,23 @@
+@startuml
+
+actor Usuario
+
+participant RecomendadorFilmes
+participant CatalogoFilmesAPI
+participant FiltroFilmes
+participant GeradorAleatorio
+
+Usuario -> RecomendadorFilmes : recomendarAleatorio(u)
+
+RecomendadorFilmes -> CatalogoFilmesAPI : listarFilmes()
+CatalogoFilmesAPI --> RecomendadorFilmes : listaFilmes
+
+RecomendadorFilmes -> FiltroFilmes : filtrar(listaFilmes, perfil)
+FiltroFilmes --> RecomendadorFilmes : filmesFiltrados
+
+RecomendadorFilmes -> GeradorAleatorio : gerarInt(size)
+GeradorAleatorio --> RecomendadorFilmes : índice
+
+RecomendadorFilmes --> Usuario : recomendacao
+
+@enduml
