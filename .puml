@@ -1,0 +1,86 @@
+@startuml
+
+class Usuario {
+  - id: String
+  - nome: String
+  - perfil: PerfilCinefilo
+  - notificacoesAtivas: boolean
+}
+
+class PerfilCinefilo {
+  - pesosGenero: Map<String, Double>
+  - duracaoMin: int
+  - duracaoMax: int
+  - classificacaoMax: int
+  - idiomasAceitos: List<String>
+  - historicoAssistidos: Set<String>
+  - notas: Map<String, Integer>
+}
+
+class Filme {
+  - id: String
+  - titulo: String
+  - ano: int
+  - duracao: int
+  - generos: List<String>
+  - classificacao: int
+  - idioma: String
+  - popularidade: double
+}
+
+class Recomendacao {
+  - filme: Filme
+  - score: double
+}
+
+interface CatalogoFilmesAPI {
+  + listarFilmes(): List<Filme>
+}
+
+class CatalogoMock implements CatalogoFilmesAPI
+
+class FiltroFilmes {
+  + filtrar(filmes: List<Filme>, perfil: PerfilCinefilo): List<Filme>
+}
+
+class CalculadoraScore {
+  + calcularScore(filme: Filme, perfil: PerfilCinefilo): double
+}
+
+class RecomendadorFilmes {
+  - catalogo: CatalogoFilmesAPI
+  - filtro: FiltroFilmes
+  - calculadora: CalculadoraScore
+  - historicoRepo: HistoricoUsuarioRepository
+  - notificador: NotificadorPush
+  - geradorAleatorio: GeradorAleatorio
+
+  + recomendar(u: Usuario, topN: int): List<Recomendacao>
+  + recomendarAleatorio(u: Usuario): Recomendacao
+}
+
+interface HistoricoUsuarioRepository {
+  + registrarRecomendacao(usuario: Usuario, lista: List<Recomendacao>)
+}
+
+interface NotificadorPush {
+  + enviar(usuario: Usuario, lista: List<Recomendacao>)
+}
+
+interface GeradorAleatorio {
+  + gerarInt(bound: int): int
+}
+
+Usuario --> PerfilCinefilo
+Recomendacao --> Filme
+RecomendadorFilmes --> CatalogoFilmesAPI
+RecomendadorFilmes --> FiltroFilmes
+RecomendadorFilmes --> CalculadoraScore
+RecomendadorFilmes --> HistoricoUsuarioRepository
+RecomendadorFilmes --> NotificadorPush
+RecomendadorFilmes --> GeradorAleatorio
+FiltroFilmes --> Filme
+CalculadoraScore --> Filme
+CalculadoraScore --> PerfilCinefilo
+
+@enduml
